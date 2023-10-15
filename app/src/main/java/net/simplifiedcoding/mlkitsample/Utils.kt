@@ -31,6 +31,3 @@ fun Context.openPermissionSetting() {
         startActivity(it)
     }
 }
-fun test(){
-
-}
