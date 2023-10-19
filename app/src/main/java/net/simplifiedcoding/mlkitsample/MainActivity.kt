@@ -25,11 +25,6 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        binding.buttonOpenScanner.setOnClickListener {
-            this.action = Action.QR_SCANNER
-            requestCameraAndStart()
-        }
-
         binding.buttonFaceDetect.setOnClickListener {
             this.action = Action.FACE_DETECTION
             requestCameraAndStart()
