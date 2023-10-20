@@ -21,13 +21,11 @@ import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.face.FaceDetection
 import com.google.mlkit.vision.face.FaceDetector
 import com.google.mlkit.vision.face.FaceDetectorOptions
-import net.simplifiedcoding.mlkitsample.Action
 import net.simplifiedcoding.mlkitsample.CameraXViewModel
 import net.simplifiedcoding.mlkitsample.cameraPermissionRequest
 import net.simplifiedcoding.mlkitsample.databinding.ActivityFaceDetectionBinding
 import net.simplifiedcoding.mlkitsample.isPermissionGranted
 import net.simplifiedcoding.mlkitsample.openPermissionSetting
-import net.simplifiedcoding.mlkitsample.qrscanner.ScannerActivity
 import java.util.concurrent.Executors
 
 
