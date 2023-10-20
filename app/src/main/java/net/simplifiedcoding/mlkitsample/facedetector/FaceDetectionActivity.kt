@@ -7,6 +7,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.core.CameraSelector
@@ -20,8 +21,13 @@ import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.face.FaceDetection
 import com.google.mlkit.vision.face.FaceDetector
 import com.google.mlkit.vision.face.FaceDetectorOptions
+import net.simplifiedcoding.mlkitsample.Action
 import net.simplifiedcoding.mlkitsample.CameraXViewModel
+import net.simplifiedcoding.mlkitsample.cameraPermissionRequest
 import net.simplifiedcoding.mlkitsample.databinding.ActivityFaceDetectionBinding
+import net.simplifiedcoding.mlkitsample.isPermissionGranted
+import net.simplifiedcoding.mlkitsample.openPermissionSetting
+import net.simplifiedcoding.mlkitsample.qrscanner.ScannerActivity
 import java.util.concurrent.Executors
 
 
@@ -33,11 +39,16 @@ class FaceDetectionActivity : AppCompatActivity() {
     private lateinit var cameraPreview: Preview
     private lateinit var imageAnalysis: ImageAnalysis
     private lateinit var imageCapture: ImageCapture
-
+    private val cameraPermission = android.Manifest.permission.CAMERA
     private val cameraXViewModel = viewModels<CameraXViewModel>()
-
+    private val requestPermissionLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) {}
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        requestCameraPermission()
+        if (!isPermissionGranted(cameraPermission)) {
+            requestCameraPermission()
+        }
         super.onCreate(savedInstanceState)
         binding = ActivityFaceDetectionBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -48,6 +59,18 @@ class FaceDetectionActivity : AppCompatActivity() {
             bindCameraPreview()
             bindInputAnalyser()
             bindCameraCapture()
+        }
+    }
+    private fun requestCameraPermission() {
+        when {
+            shouldShowRequestPermissionRationale(cameraPermission) -> {
+                cameraPermissionRequest(
+                    positive = { openPermissionSetting() }
+                )
+            }
+            else -> {
+                requestPermissionLauncher.launch(cameraPermission)
+            }
         }
     }
     private fun bindCameraCapture() {
@@ -74,7 +97,6 @@ class FaceDetectionActivity : AppCompatActivity() {
                 }
             )
         }
-//        cameraPreview.setSurfaceProvider(binding.previewView.surfaceProvider)
         try {
             processCameraProvider.bindToLifecycle(this, cameraSelector, imageCapture,
                 imageAnalysis, cameraPreview)
