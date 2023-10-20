@@ -1,4 +1,4 @@
-package net.simplifiedcoding.mlkitsample
+package hackathon
 
 import android.app.Application
 import androidx.camera.lifecycle.ProcessCameraProvider

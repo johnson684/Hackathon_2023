@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace "net.simplifiedcoding.mlkitsample"
+    namespace "meichu.hackathon"
     compileSdk 33
 
     defaultConfig {
-        applicationId "net.simplifiedcoding.mlkitsample"
+        applicationId "meichu.hackathon"
         minSdk 24
         targetSdk 33
         versionCode 1

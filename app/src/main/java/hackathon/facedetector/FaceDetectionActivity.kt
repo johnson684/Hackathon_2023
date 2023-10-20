@@ -1,6 +1,5 @@
-package net.simplifiedcoding.mlkitsample.facedetector
+package hackathon.facedetector
 
-import android.R
 import android.annotation.SuppressLint
 import android.content.ContentValues
 import android.content.Context
@@ -8,8 +7,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
-import android.view.animation.Animation
-import android.view.animation.AnimationUtils
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -26,11 +23,11 @@ import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.face.FaceDetection
 import com.google.mlkit.vision.face.FaceDetector
 import com.google.mlkit.vision.face.FaceDetectorOptions
-import net.simplifiedcoding.mlkitsample.CameraXViewModel
-import net.simplifiedcoding.mlkitsample.cameraPermissionRequest
-import net.simplifiedcoding.mlkitsample.databinding.ActivityFaceDetectionBinding
-import net.simplifiedcoding.mlkitsample.isPermissionGranted
-import net.simplifiedcoding.mlkitsample.openPermissionSetting
+import hackathon.CameraXViewModel
+import hackathon.cameraPermissionRequest
+import hackathon.isPermissionGranted
+import hackathon.openPermissionSetting
+import meichu.hackathon.databinding.ActivityFaceDetectionBinding
 import java.util.concurrent.Executors
 
 

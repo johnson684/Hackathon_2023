@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".facedetector.FaceDetectionActivity">
+    tools:context="hackathon.facedetector.FaceDetectionActivity">
 
     <androidx.camera.view.PreviewView
         android:id="@+id/preview_view"
@@ -15,7 +15,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <net.simplifiedcoding.mlkitsample.facedetector.FaceBoxOverlay
+    <hackathon.facedetector.FaceBoxOverlay
         android:id="@+id/graphic_overlay"
         android:layout_width="0dp"
         android:layout_height="0dp"
