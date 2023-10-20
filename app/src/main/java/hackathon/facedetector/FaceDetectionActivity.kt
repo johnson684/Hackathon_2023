@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.provider.MediaStore
+import android.speech.tts.TextToSpeech
 import android.util.Log
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
@@ -29,6 +30,9 @@ import hackathon.isPermissionGranted
 import hackathon.openPermissionSetting
 import hackathon.setting.SettingActivity
 import meichu.hackathon.databinding.ActivityFaceDetectionBinding
+import java.util.Locale
+import java.util.Timer
+import java.util.TimerTask
 import java.util.concurrent.Executors
 
 
@@ -39,13 +43,14 @@ class FaceDetectionActivity : AppCompatActivity() {
     private lateinit var cameraPreview: Preview
     private lateinit var imageAnalysis: ImageAnalysis
     private lateinit var imageCapture: ImageCapture
+    private lateinit var tts: TextToSpeech
     private var cameraSelector = CameraSelector.Builder().requireLensFacing(LENS_FACING_FRONT).build()
     private var lensFacing = LENS_FACING_FRONT
     private val cameraPermission = android.Manifest.permission.CAMERA
     private val cameraXViewModel = viewModels<CameraXViewModel>()
     private val requestPermissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) {}
-
+    private val faceDetectionTimer = Timer()
     override fun onCreate(savedInstanceState: Bundle?) {
         if (!isPermissionGranted(cameraPermission)) {
             requestCameraPermission()
@@ -63,6 +68,18 @@ class FaceDetectionActivity : AppCompatActivity() {
             bindCameraCapture()
             bindCameraFlip()
         }
+        // new
+        tts = TextToSpeech(applicationContext, TextToSpeech.OnInitListener {
+            if (it == TextToSpeech.SUCCESS){
+                tts.language = Locale.US
+                tts.setSpeechRate(1.0f)
+            }
+        })
+//        faceDetectionTimer.scheduleAtFixedRate(object : TimerTask() {
+//            override fun run() {
+//                tts.speak("Turn your phone right", TextToSpeech.QUEUE_ADD, null)
+//            }
+//        }, 0, 3000) // 1000 毫秒（1秒）更新一次
     }
     private fun bindCameraFlip(){
         binding.lenSwitchBtn.setOnClickListener {
