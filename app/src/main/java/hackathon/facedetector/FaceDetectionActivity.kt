@@ -27,6 +27,7 @@ import hackathon.CameraXViewModel
 import hackathon.cameraPermissionRequest
 import hackathon.isPermissionGranted
 import hackathon.openPermissionSetting
+import hackathon.setting.SettingActivity
 import meichu.hackathon.databinding.ActivityFaceDetectionBinding
 import java.util.concurrent.Executors
 
@@ -61,6 +62,9 @@ class FaceDetectionActivity : AppCompatActivity() {
             bindInputAnalyser()
             bindCameraCapture()
             bindCameraFlip()
+        }
+        binding.settingBtn.setOnClickListener{
+            SettingActivity.startActivity(this)
         }
     }
     private fun bindCameraFlip(){
