@@ -44,9 +44,10 @@
         android:layout_marginStart="30dp"
         android:padding="20dp"
         android:clickable="true"
-        android:src="@drawable/ic_camera_return"
+        android:src="@drawable/camera_return_button_selector"
         app:layout_constraintBottom_toBottomOf="@id/captureBtn"
-        app:layout_constraintStart_toEndOf="@id/captureBtn" />
+        app:layout_constraintStart_toEndOf="@id/captureBtn"
+        android:focusable="true"/>
 
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/flashlightSwitchBtn"

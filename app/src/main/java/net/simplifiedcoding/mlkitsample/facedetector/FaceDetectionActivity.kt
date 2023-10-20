@@ -107,17 +107,15 @@ class FaceDetectionActivity : AppCompatActivity() {
             val contentValues = ContentValues()
             contentValues.put(MediaStore.MediaColumns.DISPLAY_NAME, "NEW_IMAGE")
             contentValues.put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg")
+
             val outputFileOptions = ImageCapture.OutputFileOptions.Builder(
                 contentResolver,
                 MediaStore.Images.Media.EXTERNAL_CONTENT_URI,contentValues).build()
             imageCapture.takePicture(outputFileOptions, cameraExecutor,
                 object : ImageCapture.OnImageSavedCallback {
-                    override fun onError(error: ImageCaptureException)
-                    {
-                        println("Error on capturing picture.")
+                    override fun onError(error: ImageCaptureException) {
                     }
                     override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
-                        println("Successfully save picture.")
                     }
                 }
             )
