@@ -1,5 +1,6 @@
 package net.simplifiedcoding.mlkitsample.facedetector
 
+import android.R
 import android.annotation.SuppressLint
 import android.content.ContentValues
 import android.content.Context
@@ -7,10 +8,14 @@ import android.content.Intent
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
+import android.view.animation.Animation
+import android.view.animation.AnimationUtils
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.core.CameraSelector
+import androidx.camera.core.CameraSelector.LENS_FACING_BACK
+import androidx.camera.core.CameraSelector.LENS_FACING_FRONT
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageCaptureException
@@ -37,6 +42,7 @@ class FaceDetectionActivity : AppCompatActivity() {
     private lateinit var cameraPreview: Preview
     private lateinit var imageAnalysis: ImageAnalysis
     private lateinit var imageCapture: ImageCapture
+    private var lensFacing = LENS_FACING_FRONT
     private val cameraPermission = android.Manifest.permission.CAMERA
     private val cameraXViewModel = viewModels<CameraXViewModel>()
     private val requestPermissionLauncher =
@@ -51,12 +57,33 @@ class FaceDetectionActivity : AppCompatActivity() {
         binding = ActivityFaceDetectionBinding.inflate(layoutInflater)
         setContentView(binding.root)
         cameraSelector =
-            CameraSelector.Builder().requireLensFacing(CameraSelector.LENS_FACING_FRONT).build()
+            CameraSelector.Builder().requireLensFacing(LENS_FACING_FRONT).build()
         cameraXViewModel.value.processCameraProvider.observe(this) { provider ->
             processCameraProvider = provider
             bindCameraPreview()
             bindInputAnalyser()
             bindCameraCapture()
+            bindCameraFlip()
+        }
+    }
+    private fun bindCameraFlip(){
+        binding.lenSwitchBtn.setOnClickListener {
+             lensFacing = if (lensFacing == LENS_FACING_BACK) {
+                 LENS_FACING_FRONT
+             } else {
+                 LENS_FACING_BACK
+             }
+            cameraSelector = CameraSelector.Builder().requireLensFacing(lensFacing).build()
+            println("Hello, $lensFacing")
+            processCameraProvider.unbindAll();
+            try {
+                processCameraProvider.bindToLifecycle(this, cameraSelector, imageCapture,
+                    imageAnalysis, cameraPreview)
+            } catch (illegalStateException: IllegalStateException) {
+                Log.e(TAG, illegalStateException.message ?: "IllegalStateException")
+            } catch (illegalArgumentException: IllegalArgumentException) {
+                Log.e(TAG, illegalArgumentException.message ?: "IllegalArgumentException")
+            }
         }
     }
     private fun requestCameraPermission() {

@@ -12,5 +12,5 @@ dependencyResolutionManagement {
         mavenCentral()
     }
 }
-rootProject.name = "QR Scanner"
+rootProject.name = "Face Detector"
 include(":app")
