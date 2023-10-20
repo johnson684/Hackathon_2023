@@ -35,11 +35,11 @@ import java.util.concurrent.Executors
 class FaceDetectionActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityFaceDetectionBinding
-    private lateinit var cameraSelector: CameraSelector
     private lateinit var processCameraProvider: ProcessCameraProvider
     private lateinit var cameraPreview: Preview
     private lateinit var imageAnalysis: ImageAnalysis
     private lateinit var imageCapture: ImageCapture
+    private var cameraSelector = CameraSelector.Builder().requireLensFacing(LENS_FACING_FRONT).build()
     private var lensFacing = LENS_FACING_FRONT
     private val cameraPermission = android.Manifest.permission.CAMERA
     private val cameraXViewModel = viewModels<CameraXViewModel>()
@@ -47,24 +47,21 @@ class FaceDetectionActivity : AppCompatActivity() {
         registerForActivityResult(ActivityResultContracts.RequestPermission()) {}
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        requestCameraPermission()
         if (!isPermissionGranted(cameraPermission)) {
             requestCameraPermission()
         }
         super.onCreate(savedInstanceState)
         binding = ActivityFaceDetectionBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        cameraSelector =
-            CameraSelector.Builder().requireLensFacing(LENS_FACING_FRONT).build()
+        binding.settingBtn.setOnClickListener{
+            SettingActivity.startActivity(this)
+        }
         cameraXViewModel.value.processCameraProvider.observe(this) { provider ->
             processCameraProvider = provider
             bindCameraPreview()
             bindInputAnalyser()
             bindCameraCapture()
             bindCameraFlip()
-        }
-        binding.settingBtn.setOnClickListener{
-            SettingActivity.startActivity(this)
         }
     }
     private fun bindCameraFlip(){
