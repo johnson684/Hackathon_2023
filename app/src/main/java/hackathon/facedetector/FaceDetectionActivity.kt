@@ -39,11 +39,19 @@ import java.util.Timer
 import java.util.TimerTask
 import java.util.concurrent.Executors
 import hackathon.facedetector.Rec
-
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import kotlin.properties.Delegates
 
 
 class FaceDetectionActivity : AppCompatActivity() {
-
+    private var location: String by Delegates.observable("Center") { property, oldValue, newValue ->
+        rectangleView.changeLocation(location)
+        rectangleView.invalidate()
+    }
+    private var dis: Float?= null
+    private lateinit var rectangleView: Rec
     private lateinit var binding: ActivityFaceDetectionBinding
     private lateinit var processCameraProvider: ProcessCameraProvider
     private lateinit var cameraPreview: Preview
@@ -66,17 +74,12 @@ class FaceDetectionActivity : AppCompatActivity() {
         }
         super.onCreate(savedInstanceState)
         binding = ActivityFaceDetectionBinding.inflate(layoutInflater)
+
         setContentView(binding.root)
         binding.settingBtn.setOnClickListener{
             SettingActivity.startActivity(this)
         }
-
-        // 获取 RectangleView 的引用
-        val rectangleView: Rec = findViewById(R.id.Rec)
-
-        rectangleView.invalidate()
-        // 调用 RectangleView 中的方法，例如绘制矩形
-//        rectangleView.rec()
+        rectangleView = findViewById(R.id.Rec)
 
         cameraXViewModel.value.processCameraProvider.observe(this) { provider ->
             processCameraProvider = provider
@@ -97,6 +100,7 @@ class FaceDetectionActivity : AppCompatActivity() {
 //                tts.speak("Turn your phone right", TextToSpeech.QUEUE_ADD, null)
 //            }
 //        }, 0, 3000) // 1000 毫秒（1秒）更新一次
+
     }
 
     private fun bindCameraFlip(){
@@ -211,6 +215,7 @@ class FaceDetectionActivity : AppCompatActivity() {
             faces.forEach { face ->
                 val faceBox = FaceBox(binding.graphicOverlay, face, imageProxy.image!!.cropRect)
                 binding.graphicOverlay.add(faceBox)
+
             }
         }.addOnFailureListener {
             it.printStackTrace()

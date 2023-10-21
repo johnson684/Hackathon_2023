@@ -17,18 +17,21 @@ open class Rec (context: Context?, attrs: AttributeSet?): View(context, attrs) {
     private var right = 700f
     private var bottom = 700f
 
-    open fun changeLocation(location: FaceLocation) {
-        if(location == FaceLocation("Center") {
+    open fun changeLocation(location: String) {
+        if(location == "Center") {
+            left = 500f
+            top = 500f
+            right = 700f
+            bottom = 700f
+        }
+        else if(location == "Left") {
+            left = 100f
+            top = 100f
+            right = 300f
+            bottom = 300f
 
         }
-        else if(location == FaceLocation("Left")) {
-            left = 300f
-            top = 300f
-            right = 500f
-            bottom = 500f
-
-        }
-        else if(location == FaceLocation("Right")) {
+        else if(location == "Right") {
 
         }
     }
@@ -37,7 +40,7 @@ open class Rec (context: Context?, attrs: AttributeSet?): View(context, attrs) {
 
         paint.color = Color.BLUE
         paint.style = Paint.Style.STROKE
-
+        paint.strokeWidth = 12f
 
 
 
