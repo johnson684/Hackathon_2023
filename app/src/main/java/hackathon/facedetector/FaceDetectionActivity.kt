@@ -54,6 +54,9 @@ class FaceDetectionActivity : AppCompatActivity() {
     }
     private var dis: Float?= null
     private var err: Float = 250f
+    private var command: String by Delegates.observable("center") { property, oldValue, newValue ->
+        setLocation()
+    }
     private lateinit var rectangleView: Rec
     private lateinit var binding: ActivityFaceDetectionBinding
     private lateinit var processCameraProvider: ProcessCameraProvider
@@ -250,6 +253,9 @@ class FaceDetectionActivity : AppCompatActivity() {
                 // on below line we are setting data
                 // to our output text view.
                 Log.d("voice", Objects.requireNonNull(res)[0])
+                command = Objects.requireNonNull((res)[0]).split(" ")
+                    .joinToString(separator = "_")
+
             }
         }
     }
@@ -274,24 +280,24 @@ class FaceDetectionActivity : AppCompatActivity() {
 //        }
     }
     private fun setLocation() {
-        if(vertical == 0 && horizon == 0) {
+        if((vertical == 0 && horizon == 0) || command == "left_top") {
             location = "Left_Top"
-        } else if(vertical == 0 && horizon == 1) {
+        } else if((vertical == 0 && horizon == 1 ) || command == "top") {
             location = "Top"
-        } else if(vertical == 0 && horizon == 2) {
+        } else if((vertical == 0 && horizon == 2) || command == "right_top") {
             location = "Right_Top"
-        } else if(vertical == 1 && horizon == 0) {
+        } else if((vertical == 1 && horizon == 0) || command == "left"){
             location = "Left"
-        } else if(vertical == 1 && horizon == 1) {
-            location = "Center"
-        } else if(vertical == 1 && horizon == 2) {
+        } else if((vertical == 1 && horizon == 2) || command == "right"){
             location = "Right"
-        } else if(vertical == 2 && horizon == 0) {
+        } else if((vertical == 2 && horizon == 0) || command == "left_bottom"){
             location = "Left_Bottom"
-        } else if(vertical == 2 && horizon == 1) {
+        } else if((vertical == 2 && horizon == 1) || command == "bottom"){
             location = "Bottom"
-        } else if(vertical == 2 && horizon == 2) {
+        } else if((vertical == 2 && horizon == 2) || command == "right_bottom"){
             location = "Right_Bottom"
+        } else if((vertical == 1 && horizon == 1) || command == "Center"){
+            location = "Center"
         }
     }
     private fun buildLocationDialog(){
