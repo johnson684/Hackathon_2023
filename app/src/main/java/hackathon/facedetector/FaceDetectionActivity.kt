@@ -157,31 +157,22 @@ class FaceDetectionActivity : AppCompatActivity() {
         }
         val dialog = builder.create()
         dialog.show()
-        //buildButtonOnClickListener()
     }
     private fun buildAngleDialog(){
         val builder = AlertDialog.Builder(this)
         builder.setTitle("請設定角度")
         builder.setCancelable(false)
-        val options = arrayOf("正臉", "右側臉", "左側臉")
-        val checkedItems = BooleanArray(options.size) // 用于追踪选项的选择状态
-
-        builder.setMultiChoiceItems(
-            options, checkedItems
-        ) { dialog, which, isChecked -> // 用户点击选项时触发
-            checkedItems[which] = isChecked
-        }
+        val inflater = getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater
+        builder.setView(inflater.inflate(R.layout.select_angle, null))
 
         builder.setPositiveButton(
             "確定"
         ) { dialog, which ->
-            // 处理用户的选择
-            for (i in options.indices) {
-                if (checkedItems[i]) {
-                    // 用户选择了选项 i
-                    // 在这里处理选中的选项
-                }
-            }
+            binding.overlayView.alpha = 0f
+        }
+        builder.setNegativeButton(
+            "取消"
+        ){  dialog, which ->
             binding.overlayView.alpha = 0f
         }
         val dialog = builder.create()
