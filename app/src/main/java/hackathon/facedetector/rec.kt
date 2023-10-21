@@ -29,11 +29,22 @@ open class Rec (context: Context?, attrs: AttributeSet?): View(context, attrs) {
             top = 100f
             right = 300f
             bottom = 300f
-
         }
         else if(location == "Right") {
 
         }
+    }
+    fun floatToPixel(value: Float): Int{
+        val density = resources.displayMetrics.density
+//        return (value * 1 / density + 0.5f).toInt()
+        return value.toInt()
+    }
+
+    fun centerX(): Int{
+        return floatToPixel((this.left + this.right)/2)
+    }
+    fun centerY(): Int{
+        return floatToPixel((this.top + this.bottom)/2)
     }
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)

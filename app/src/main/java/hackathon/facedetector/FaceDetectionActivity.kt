@@ -42,6 +42,7 @@ import hackathon.facedetector.Rec
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import kotlin.math.absoluteValue
 import kotlin.properties.Delegates
 
 
@@ -51,6 +52,7 @@ class FaceDetectionActivity : AppCompatActivity() {
         rectangleView.invalidate()
     }
     private var dis: Float?= null
+    private var err: Float = 250f
     private lateinit var rectangleView: Rec
     private lateinit var binding: ActivityFaceDetectionBinding
     private lateinit var processCameraProvider: ProcessCameraProvider
@@ -215,7 +217,23 @@ class FaceDetectionActivity : AppCompatActivity() {
             faces.forEach { face ->
                 val faceBox = FaceBox(binding.graphicOverlay, face, imageProxy.image!!.cropRect)
                 binding.graphicOverlay.add(faceBox)
-
+                if((faceBox.face.boundingBox.centerX() - rectangleView.centerX()).absoluteValue > err){
+                    if((faceBox.face.boundingBox.centerX() > rectangleView.centerX() && lensFacing == LENS_FACING_FRONT) || (faceBox.face.boundingBox.centerX() < rectangleView.centerX() && lensFacing == LENS_FACING_BACK)){
+                        Log.d("move", "turn left")
+                    }
+                    else{
+                        Log.d("move", "turn right")
+                    }
+                }
+                else{
+                    if((faceBox.face.boundingBox.centerY() - rectangleView.centerY()).absoluteValue > err) {
+                        if ((faceBox.face.boundingBox.centerY() > rectangleView.centerY() && lensFacing == LENS_FACING_FRONT) || (faceBox.face.boundingBox.centerY() < rectangleView.centerY() && lensFacing == LENS_FACING_BACK)) {
+                            Log.d("move", "turn up")
+                        } else {
+                            Log.d("move", "turn down")
+                        }
+                    }
+                }
             }
         }.addOnFailureListener {
             it.printStackTrace()
