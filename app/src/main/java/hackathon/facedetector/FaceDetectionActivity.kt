@@ -7,8 +7,10 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.provider.MediaStore
+import android.speech.RecognizerIntent
 import android.speech.tts.TextToSpeech
 import android.util.Log
+import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.CheckBox
@@ -37,6 +39,7 @@ import hackathon.openPermissionSetting
 import meichu.hackathon.R
 import meichu.hackathon.databinding.ActivityFaceDetectionBinding
 import java.util.Locale
+import java.util.Objects
 import java.util.Timer
 import java.util.TimerTask
 import java.util.concurrent.Executors
@@ -58,6 +61,7 @@ class FaceDetectionActivity : AppCompatActivity() {
     private lateinit var imageCapture: ImageCapture
     private lateinit var tts: TextToSpeech
     private lateinit var checkBox: CheckBox
+    private val REQUEST_CODE_SPEECH_INPUT = 1
     private var cameraSelector = CameraSelector.Builder().requireLensFacing(LENS_FACING_FRONT).build()
     private val cameraPermission = android.Manifest.permission.CAMERA
     private val cameraXViewModel = viewModels<CameraXViewModel>()
@@ -91,8 +95,6 @@ class FaceDetectionActivity : AppCompatActivity() {
         Log.d("height","$screenHeight")
         rectangleView = findViewById(R.id.Rec)
         rectangleView.setScreenSize(screenWidth, screenHeight)
-
-
         cameraXViewModel.value.processCameraProvider.observe(this) { provider ->
             processCameraProvider = provider
             bindCameraPreview()
@@ -100,13 +102,12 @@ class FaceDetectionActivity : AppCompatActivity() {
             bindCameraCapture()
             bindCameraFlip()
         }
-        // new
-        tts = TextToSpeech(applicationContext, TextToSpeech.OnInitListener {
-            if (it == TextToSpeech.SUCCESS){
-                tts.language = Locale.US
-                tts.setSpeechRate(1.0f)
-            }
-        })
+//        tts = TextToSpeech(applicationContext, TextToSpeech.OnInitListener {
+//            if (it == TextToSpeech.SUCCESS){
+//                tts.language = Locale.US
+//                tts.setSpeechRate(1.0f)
+//            }
+//        })
 
 //        faceDetectionTimer.scheduleAtFixedRate(object : TimerTask() {
 //            override fun run() {
@@ -156,6 +157,101 @@ class FaceDetectionActivity : AppCompatActivity() {
             }
         }
 
+    }
+    fun updateLifecycle(){
+        try {
+            processCameraProvider.bindToLifecycle(this, cameraSelector, imageCapture,
+                imageAnalysis, cameraPreview)
+        } catch (illegalStateException: IllegalStateException) {
+            Log.e(TAG, illegalStateException.message ?: "IllegalStateException")
+        } catch (illegalArgumentException: IllegalArgumentException) {
+            Log.e(TAG, illegalArgumentException.message ?: "IllegalArgumentException")
+        }
+    }
+    fun takePhoto(){
+        val cameraExecutor = Executors.newSingleThreadExecutor()
+        val contentValues = ContentValues()
+        contentValues.put(MediaStore.MediaColumns.DISPLAY_NAME, "NEW_IMAGE")
+        contentValues.put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg")
+
+        val outputFileOptions = ImageCapture.OutputFileOptions.Builder(
+            contentResolver,
+            MediaStore.Images.Media.EXTERNAL_CONTENT_URI,contentValues).build()
+        imageCapture.takePicture(outputFileOptions, cameraExecutor,
+            object : ImageCapture.OnImageSavedCallback {
+                override fun onError(error: ImageCaptureException) {
+                }
+                override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
+                }
+            }
+        )
+    }
+    override fun dispatchKeyEvent(event: KeyEvent): Boolean {
+        if (event.keyCode == KeyEvent.KEYCODE_VOLUME_DOWN) {
+            voiceControl()
+            return true
+        }
+//        if(event.keyCode == KeyEvent.KEYCODE_VOLUME_UP){
+//            takePhoto()
+//            updateLifecycle()
+//        }
+        return super.dispatchKeyEvent(event)
+    }
+    private fun voiceControl(){
+        val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
+
+        // on below line we are passing language model
+        // and model free form in our intent
+        intent.putExtra(
+            RecognizerIntent.EXTRA_LANGUAGE_MODEL,
+            RecognizerIntent.LANGUAGE_MODEL_FREE_FORM
+        )
+
+        // on below line we are passing our
+        // language as a default language.
+        intent.putExtra(
+            RecognizerIntent.EXTRA_LANGUAGE,
+            Locale.getDefault()
+        )
+
+        // on below line we are specifying a prompt
+        // message as speak to text on below line.
+        intent.putExtra(RecognizerIntent.EXTRA_PROMPT, "Speak to text")
+
+        // on below line we are specifying a try catch block.
+        // in this block we are calling a start activity
+        // for result method and passing our result code.
+        try {
+            startActivityForResult(intent, REQUEST_CODE_SPEECH_INPUT)
+        } catch (e: Exception) {
+            // on below line we are displaying error message in toast
+            Toast
+                .makeText(
+                    this@FaceDetectionActivity, " " + e.message,
+                    Toast.LENGTH_SHORT
+                )
+                .show()
+        }
+    }
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        // in this method we are checking request
+        // code with our result code.
+        if (requestCode == REQUEST_CODE_SPEECH_INPUT) {
+            // on below line we are checking if result code is ok
+            if (resultCode == RESULT_OK && data != null) {
+
+                // in that case we are extracting the
+                // data from our array list
+                val res: ArrayList<String> =
+                    data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS) as ArrayList<String>
+
+                // on below line we are setting data
+                // to our output text view.
+                Log.d("voice", Objects.requireNonNull(res)[0])
+            }
+        }
     }
     private fun buildButtonOnClickListener(){
 //        checkBox = findViewById<CheckBox>(R.id.button1)
@@ -208,7 +304,6 @@ class FaceDetectionActivity : AppCompatActivity() {
         builder.setPositiveButton(
             "確定"
         ) { dialog, which ->
-            setLocation()
             buildAngleDialog()
         }
         builder.setNegativeButton(
@@ -249,14 +344,7 @@ class FaceDetectionActivity : AppCompatActivity() {
             cameraSelector = CameraSelector.Builder().requireLensFacing(lensFacing).build()
             println("Hello, $lensFacing")
             processCameraProvider.unbindAll()
-            try {
-                processCameraProvider.bindToLifecycle(this, cameraSelector, imageCapture,
-                    imageAnalysis, cameraPreview)
-            } catch (illegalStateException: IllegalStateException) {
-                Log.e(TAG, illegalStateException.message ?: "IllegalStateException")
-            } catch (illegalArgumentException: IllegalArgumentException) {
-                Log.e(TAG, illegalArgumentException.message ?: "IllegalArgumentException")
-            }
+            updateLifecycle()
         }
     }
     private fun requestCameraPermission() {
@@ -276,31 +364,9 @@ class FaceDetectionActivity : AppCompatActivity() {
             .setTargetRotation(binding.previewView.display.rotation)
             .build()
         binding.captureBtn.setOnClickListener {
-            val cameraExecutor = Executors.newSingleThreadExecutor()
-            val contentValues = ContentValues()
-            contentValues.put(MediaStore.MediaColumns.DISPLAY_NAME, "NEW_IMAGE")
-            contentValues.put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg")
-
-            val outputFileOptions = ImageCapture.OutputFileOptions.Builder(
-                contentResolver,
-                MediaStore.Images.Media.EXTERNAL_CONTENT_URI,contentValues).build()
-            imageCapture.takePicture(outputFileOptions, cameraExecutor,
-                object : ImageCapture.OnImageSavedCallback {
-                    override fun onError(error: ImageCaptureException) {
-                    }
-                    override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
-                    }
-                }
-            )
+            takePhoto()
         }
-        try {
-            processCameraProvider.bindToLifecycle(this, cameraSelector, imageCapture,
-                imageAnalysis, cameraPreview)
-        } catch (illegalStateException: IllegalStateException) {
-            Log.e(TAG, illegalStateException.message ?: "IllegalStateException")
-        } catch (illegalArgumentException: IllegalArgumentException) {
-            Log.e(TAG, illegalArgumentException.message ?: "IllegalArgumentException")
-        }
+        updateLifecycle()
     }
     private fun bindCameraPreview() {
         cameraPreview = Preview.Builder()
