@@ -3,7 +3,6 @@ package hackathon.facedetector
 import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.ContentValues
-import android.content.Context
 import android.content.Intent
 import android.graphics.RectF
 import android.os.Bundle
@@ -14,9 +13,7 @@ import android.util.Log
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
-import android.widget.CheckBox
 import android.widget.RadioButton
-import android.widget.RadioGroup
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
@@ -49,16 +46,16 @@ import java.util.concurrent.Executors
 import kotlin.properties.Delegates
 
 var lensFacing = LENS_FACING_FRONT
+var faceAngle: Float = 0.0f
 class FaceDetectionActivity : AppCompatActivity() {
-    private var location: String by Delegates.observable("Center") { property, oldValue, newValue ->
+    private var location: String by Delegates.observable("Center") { _, _, _ ->
         rectangleView.changeLocation(location)
         rectangleView.invalidate()
     }
     private var NoFace:Boolean = true
-    private var dis: Float?= null
     private var err: Float = 250f
     private var rect: RectF = RectF(0f, 0f, 0f, 0f)
-    private var command: String by Delegates.observable("center") { property, oldValue, newValue ->
+    private var command: String by Delegates.observable("center") { _, _, _ ->
         setLocation()
     }
     private lateinit var rectangleView: Rec
@@ -68,7 +65,6 @@ class FaceDetectionActivity : AppCompatActivity() {
     private lateinit var imageAnalysis: ImageAnalysis
     private lateinit var imageCapture: ImageCapture
     private lateinit var tts: TextToSpeech
-    private lateinit var checkBox: CheckBox
     private val REQUEST_CODE_SPEECH_INPUT = 1
     private var cameraSelector = CameraSelector.Builder().requireLensFacing(LENS_FACING_FRONT).build()
     private val cameraPermission = android.Manifest.permission.CAMERA
@@ -78,9 +74,6 @@ class FaceDetectionActivity : AppCompatActivity() {
     private var faceDetectionTimer = Timer()
     private var screenWidth = 0
     private var screenHeight = 0
-
-
-    private val checkBoxList = mutableListOf<CheckBox>()
     @SuppressLint("ResourceType")
     override fun onCreate(savedInstanceState: Bundle?) {
         if (!isPermissionGranted(cameraPermission)) {
@@ -167,17 +160,17 @@ class FaceDetectionActivity : AppCompatActivity() {
         }
 
     }
-    fun updateLifecycle(){
+    private fun updateLifecycle(){
         try {
             processCameraProvider.bindToLifecycle(this, cameraSelector, imageCapture,
                 imageAnalysis, cameraPreview)
         } catch (illegalStateException: IllegalStateException) {
-            Log.e(TAG, illegalStateException.message ?: "IllegalStateException")
+            Log.e("TAG", illegalStateException.message ?: "IllegalStateException")
         } catch (illegalArgumentException: IllegalArgumentException) {
-            Log.e(TAG, illegalArgumentException.message ?: "IllegalArgumentException")
+            Log.e("TAG", illegalArgumentException.message ?: "IllegalArgumentException")
         }
     }
-    fun takePhoto(){
+    private fun takePhoto(){
         val cameraExecutor = Executors.newSingleThreadExecutor()
         val contentValues = ContentValues()
         contentValues.put(MediaStore.MediaColumns.DISPLAY_NAME, "NEW_IMAGE")
@@ -309,13 +302,13 @@ class FaceDetectionActivity : AppCompatActivity() {
 
         builder.setPositiveButton(
             "確定"
-        ) { dialog, which ->
+        ) { _, _ ->
             setLocation()
             buildAngleDialog()
         }
         builder.setNegativeButton(
             "取消"
-        ){  dialog, which ->
+        ){  _, _ ->
             binding.overlayView.alpha = 0f
             faceDetectionTimer = Timer()
             faceDetectionTimer.scheduleAtFixedRate(object : TimerTask() {
@@ -344,7 +337,7 @@ class FaceDetectionActivity : AppCompatActivity() {
 
         builder.setPositiveButton(
             "確定"
-        ) { dialog, which ->
+        ) { _, _ ->
             binding.overlayView.alpha = 0f
             faceDetectionTimer = Timer()
             faceDetectionTimer.scheduleAtFixedRate(object : TimerTask() {
@@ -363,7 +356,7 @@ class FaceDetectionActivity : AppCompatActivity() {
         }
         builder.setNegativeButton(
             "取消"
-        ){  dialog, which ->
+        ){  _, _ ->
             binding.overlayView.alpha = 0f
             faceDetectionTimer = Timer()
             faceDetectionTimer.scheduleAtFixedRate(object : TimerTask() {
@@ -425,9 +418,9 @@ class FaceDetectionActivity : AppCompatActivity() {
         try {
             processCameraProvider.bindToLifecycle(this, cameraSelector, cameraPreview)
         } catch (illegalStateException: IllegalStateException) {
-            Log.e(TAG, illegalStateException.message ?: "IllegalStateException")
+            Log.e("TAG", illegalStateException.message ?: "IllegalStateException")
         } catch (illegalArgumentException: IllegalArgumentException) {
-            Log.e(TAG, illegalArgumentException.message ?: "IllegalArgumentException")
+            Log.e("TAG", illegalArgumentException.message ?: "IllegalArgumentException")
         }
     }
 
@@ -451,9 +444,9 @@ class FaceDetectionActivity : AppCompatActivity() {
         try {
             processCameraProvider.bindToLifecycle(this, cameraSelector, imageAnalysis)
         } catch (illegalStateException: IllegalStateException) {
-            Log.e(TAG, illegalStateException.message ?: "IllegalStateException")
+            Log.e("TAG", illegalStateException.message ?: "IllegalStateException")
         } catch (illegalArgumentException: IllegalArgumentException) {
-            Log.e(TAG, illegalArgumentException.message ?: "IllegalArgumentException")
+            Log.e("TAG", illegalArgumentException.message ?: "IllegalArgumentException")
         }
     }
 
@@ -469,6 +462,7 @@ class FaceDetectionActivity : AppCompatActivity() {
                 val faceBox = FaceBox(binding.graphicOverlay, face, imageProxy.image!!.cropRect)
                 binding.graphicOverlay.add(faceBox)
                 rect = faceBox.returnFace()
+                faceAngle = face.headEulerAngleZ
                 Log.d("Facepos","face:${rect.centerX()}")
                 Log.d("Facepos","rect:${rectangleView.centerX()}")
             }
@@ -479,12 +473,5 @@ class FaceDetectionActivity : AppCompatActivity() {
         }
     }
 
-    companion object {
-        private val TAG = FaceDetectionActivity::class.simpleName
-        fun startActivity(context: Context) {
-            Intent(context, FaceDetectionActivity::class.java).also {
-                context.startActivity(it)
-            }
-        }
-    }
+
 }
