@@ -1,6 +1,7 @@
 package hackathon.facedetector
 
 import android.annotation.SuppressLint
+import android.app.AlertDialog
 import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
@@ -8,6 +9,8 @@ import android.os.Bundle
 import android.provider.MediaStore
 import android.speech.tts.TextToSpeech
 import android.util.Log
+import android.view.LayoutInflater
+import android.widget.CheckBox
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -28,14 +31,15 @@ import hackathon.CameraXViewModel
 import hackathon.cameraPermissionRequest
 import hackathon.isPermissionGranted
 import hackathon.openPermissionSetting
-import hackathon.setting.SettingActivity
 import meichu.hackathon.R
 import meichu.hackathon.databinding.ActivityFaceDetectionBinding
 import java.util.Locale
 import java.util.Timer
+import java.util.TimerTask
 import java.util.concurrent.Executors
 import kotlin.properties.Delegates
 
+var lensFacing = LENS_FACING_FRONT
 class FaceDetectionActivity : AppCompatActivity() {
     private var location: String by Delegates.observable("Center") { property, oldValue, newValue ->
         rectangleView.changeLocation(location)
@@ -50,8 +54,8 @@ class FaceDetectionActivity : AppCompatActivity() {
     private lateinit var imageAnalysis: ImageAnalysis
     private lateinit var imageCapture: ImageCapture
     private lateinit var tts: TextToSpeech
+    private lateinit var checkBox: CheckBox
     private var cameraSelector = CameraSelector.Builder().requireLensFacing(LENS_FACING_FRONT).build()
-    private var lensFacing = LENS_FACING_FRONT
     private val cameraPermission = android.Manifest.permission.CAMERA
     private val cameraXViewModel = viewModels<CameraXViewModel>()
     private val requestPermissionLauncher =
@@ -61,16 +65,20 @@ class FaceDetectionActivity : AppCompatActivity() {
     private var screenHeight = 0
 
 
+    private val checkBoxList = mutableListOf<CheckBox>()
+    @SuppressLint("ResourceType")
     override fun onCreate(savedInstanceState: Bundle?) {
         if (!isPermissionGranted(cameraPermission)) {
             requestCameraPermission()
         }
         super.onCreate(savedInstanceState)
         binding = ActivityFaceDetectionBinding.inflate(layoutInflater)
-
         setContentView(binding.root)
         binding.settingBtn.setOnClickListener{
-            SettingActivity.startActivity(this)
+            faceDetectionTimer.cancel()
+//            SettingActivity.startActivity(this)
+            buildLocationDialog()
+            binding.overlayView.alpha = 0.7f
         }
 
         var myUtilityClass = MyUtilityClass(this)
@@ -104,8 +112,81 @@ class FaceDetectionActivity : AppCompatActivity() {
 //            }
 //        }, 0, 3000) // 1000 毫秒（1秒）更新一次
 
+        faceDetectionTimer.scheduleAtFixedRate(object : TimerTask() {
+            override fun run() {
+                //tts.speak("Turn your phone right", TextToSpeech.QUEUE_ADD, null)
+            }
+        }, 0, 3000) // 1000 毫秒（1秒）更新一次
     }
+    private fun buildButtonOnClickListener(){
+//        checkBox = findViewById<CheckBox>(R.id.button1)
+//        checkBox.isChecked = true
+        for (i in 0..8) {
+//            val checkBoxId = resources.getIdentifier("button$i", "id", packageName)
+//            val checkBox = findViewById<CheckBox>(checkBoxId)
 
+//            checkBox.setOnClickListener(View.OnClickListener {
+//                resetAllButton()
+//            })
+//            checkBoxList.add(checkBox)
+        }
+    }
+    private fun resetAllButton(){
+//        for (i in 0..8) {
+//            val buttonId = resources.getIdentifier("button$i", "id", packageName)
+//            val checkBoxObj = findViewById<CheckBox>(buttonId)
+//            checkBoxObj.isChecked = false
+//        }
+    }
+    private fun buildLocationDialog(){
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle("請設定位置")
+        builder.setCancelable(false)
+        val inflater = getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater
+        builder.setView(inflater.inflate(R.layout.select_location, null))
+
+        builder.setPositiveButton(
+            "確定"
+        ) { dialog, which ->
+            buildAngleDialog()
+        }
+        builder.setNegativeButton(
+            "取消"
+        ){  dialog, which ->
+            binding.overlayView.alpha = 0f
+        }
+        val dialog = builder.create()
+        dialog.show()
+        //buildButtonOnClickListener()
+    }
+    private fun buildAngleDialog(){
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle("請設定角度")
+        builder.setCancelable(false)
+        val options = arrayOf("正臉", "右側臉", "左側臉")
+        val checkedItems = BooleanArray(options.size) // 用于追踪选项的选择状态
+
+        builder.setMultiChoiceItems(
+            options, checkedItems
+        ) { dialog, which, isChecked -> // 用户点击选项时触发
+            checkedItems[which] = isChecked
+        }
+
+        builder.setPositiveButton(
+            "確定"
+        ) { dialog, which ->
+            // 处理用户的选择
+            for (i in options.indices) {
+                if (checkedItems[i]) {
+                    // 用户选择了选项 i
+                    // 在这里处理选中的选项
+                }
+            }
+            binding.overlayView.alpha = 0f
+        }
+        val dialog = builder.create()
+        dialog.show()
+    }
     private fun bindCameraFlip(){
         binding.lenSwitchBtn.setOnClickListener {
              lensFacing = if (lensFacing == LENS_FACING_BACK) {

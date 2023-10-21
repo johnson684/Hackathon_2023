@@ -2,12 +2,11 @@ package hackathon.facedetector
 
 import android.content.Context
 import android.graphics.Canvas
-import android.graphics.Color
-import android.graphics.Paint
 import android.graphics.Rect
 import android.graphics.RectF
 import android.util.AttributeSet
 import android.view.View
+import androidx.camera.core.CameraSelector
 import kotlin.math.ceil
 
 open class FaceBoxOverlay(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
@@ -44,8 +43,13 @@ open class FaceBoxOverlay(context: Context?, attrs: AttributeSet?) : View(contex
             val centerX = overlay.width.toFloat() / 2
 
             return mappedBox.apply {
-                left = centerX + (centerX - left)
-                right = centerX - (right - centerX)
+                when(lensFacing){
+                    CameraSelector.LENS_FACING_FRONT -> {
+                        left = centerX + (centerX - left)
+                        right = centerX - (right - centerX)
+                    }
+                }
+
             }
         }
     }

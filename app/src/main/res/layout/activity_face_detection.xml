@@ -27,7 +27,16 @@
         android:id="@+id/Rec"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
-
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/overlayView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/black"
+        android:alpha="0"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:focusable="true" />
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/captureBtn"
         android:contentDescription = "take picture"
@@ -62,5 +71,4 @@
         android:src="@drawable/settings"
         app:layout_constraintBottom_toBottomOf="@id/captureBtn"
         app:layout_constraintEnd_toStartOf="@id/captureBtn" />
-
 </androidx.constraintlayout.widget.ConstraintLayout>

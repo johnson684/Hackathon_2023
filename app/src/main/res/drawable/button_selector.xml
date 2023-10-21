@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+    <!-- 默认状态下的按钮颜色 -->
+    <item android:state_checked="true">
+        <shape android:shape="rectangle">
+            <solid android:color="#FF03DAC5" /> <!-- 此处设置默认颜色 -->
+        </shape>
+    </item>
+    <!-- 按下状态的按钮颜色 -->
+    <item tools:ignore="StateListReachable">
+        <shape android:shape="rectangle">
+            <solid android:color="#FFF0DAC5" /> <!-- 此处设置按下时的颜色 -->
+        </shape>
+    </item>
+</selector>

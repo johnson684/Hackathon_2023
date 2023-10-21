@@ -18,6 +18,7 @@ class FaceBox(
         style = Paint.Style.STROKE
         strokeWidth = 6.0f
     }
+
     override fun draw(canvas: Canvas?) {
         val rect = getBoxRect(
             imageRectWidth = imageRect.width().toFloat(),
@@ -26,7 +27,7 @@ class FaceBox(
         )
         canvas?.drawRect(rect, paint)
     }
-    open fun returnFace(): RectF {
+    fun returnFace(): RectF {
         val rect = getBoxRect(
             imageRectWidth = imageRect.width().toFloat(),
             imageRectHeight = imageRect.height().toFloat(),
