@@ -5,6 +5,7 @@ import android.app.AlertDialog
 import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
+import android.graphics.RectF
 import android.os.Bundle
 import android.provider.MediaStore
 import android.speech.RecognizerIntent
@@ -34,6 +35,7 @@ import com.google.mlkit.vision.face.FaceDetection
 import com.google.mlkit.vision.face.FaceDetector
 import com.google.mlkit.vision.face.FaceDetectorOptions
 import hackathon.CameraXViewModel
+import hackathon.DeterminDir
 import hackathon.cameraPermissionRequest
 import hackathon.isPermissionGranted
 import hackathon.openPermissionSetting
@@ -52,8 +54,10 @@ class FaceDetectionActivity : AppCompatActivity() {
         rectangleView.changeLocation(location)
         rectangleView.invalidate()
     }
+    private var NoFace:Boolean = true
     private var dis: Float?= null
     private var err: Float = 250f
+    private var rect: RectF = RectF(0f, 0f, 0f, 0f)
     private var command: String by Delegates.observable("center") { property, oldValue, newValue ->
         setLocation()
     }
@@ -71,7 +75,7 @@ class FaceDetectionActivity : AppCompatActivity() {
     private val cameraXViewModel = viewModels<CameraXViewModel>()
     private val requestPermissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) {}
-    private val faceDetectionTimer = Timer()
+    private var faceDetectionTimer = Timer()
     private var screenWidth = 0
     private var screenHeight = 0
 
@@ -87,7 +91,6 @@ class FaceDetectionActivity : AppCompatActivity() {
         setContentView(binding.root)
         binding.settingBtn.setOnClickListener{
             faceDetectionTimer.cancel()
-//            SettingActivity.startActivity(this)
             buildLocationDialog()
             binding.overlayView.alpha = 0.7f
         }
@@ -106,22 +109,24 @@ class FaceDetectionActivity : AppCompatActivity() {
             bindCameraCapture()
             bindCameraFlip()
         }
-//        tts = TextToSpeech(applicationContext, TextToSpeech.OnInitListener {
-//            if (it == TextToSpeech.SUCCESS){
-//                tts.language = Locale.US
-//                tts.setSpeechRate(1.0f)
-//            }
-//        })
-
-//        faceDetectionTimer.scheduleAtFixedRate(object : TimerTask() {
-//            override fun run() {
-//                tts.speak("Turn your phone right", TextToSpeech.QUEUE_ADD, null)
-//            }
-//        }, 0, 3000) // 1000 毫秒（1秒）更新一次
+        tts = TextToSpeech(applicationContext, TextToSpeech.OnInitListener {
+            if (it == TextToSpeech.SUCCESS){
+                tts.language = Locale.US
+                tts.setSpeechRate(1.0f)
+            }
+        })
 
         faceDetectionTimer.scheduleAtFixedRate(object : TimerTask() {
             override fun run() {
-                //tts.speak("Turn your phone right", TextToSpeech.QUEUE_ADD, null)
+                DeterminDir(
+                    rect.centerX(),
+                    rect.centerY(),
+                    rectangleView.centerX(),
+                    rectangleView.centerY(),
+                    tts,
+                    err,
+                    NoFace
+                )
             }
         }, 0, 3000) // 1000 毫秒（1秒）更新一次
     }
@@ -192,6 +197,7 @@ class FaceDetectionActivity : AppCompatActivity() {
     }
     override fun dispatchKeyEvent(event: KeyEvent): Boolean {
         if (event.keyCode == KeyEvent.KEYCODE_VOLUME_DOWN) {
+            faceDetectionTimer.cancel()
             voiceControl()
             return true
         }
@@ -253,31 +259,25 @@ class FaceDetectionActivity : AppCompatActivity() {
                 // on below line we are setting data
                 // to our output text view.
                 Log.d("voice", Objects.requireNonNull(res)[0])
-                command = Objects.requireNonNull((res)[0]).split(" ")
+                command = Objects.requireNonNull((res)[0]).toLowerCase().split(" ")
                     .joinToString(separator = "_")
 
+                faceDetectionTimer = Timer()
+                faceDetectionTimer.scheduleAtFixedRate(object : TimerTask() {
+                    override fun run() {
+                        DeterminDir(
+                            rect.centerX(),
+                            rect.centerY(),
+                            rectangleView.centerX(),
+                            rectangleView.centerY(),
+                            tts,
+                            err,
+                            NoFace
+                        )
+                    }
+                }, 0, 3000) // 1000 毫秒（1秒）更新一次
             }
         }
-    }
-    private fun buildButtonOnClickListener(){
-//        checkBox = findViewById<CheckBox>(R.id.button1)
-//        checkBox.isChecked = true
-        for (i in 0..8) {
-//            val checkBoxId = resources.getIdentifier("button$i", "id", packageName)
-//            val checkBox = findViewById<CheckBox>(checkBoxId)
-
-//            checkBox.setOnClickListener(View.OnClickListener {
-//                resetAllButton()
-//            })
-//            checkBoxList.add(checkBox)
-        }
-    }
-    private fun resetAllButton(){
-//        for (i in 0..8) {
-//            val buttonId = resources.getIdentifier("button$i", "id", packageName)
-//            val checkBoxObj = findViewById<CheckBox>(buttonId)
-//            checkBoxObj.isChecked = false
-//        }
     }
     private fun setLocation() {
         if((vertical == 0 && horizon == 0) || command == "left_top") {
@@ -296,7 +296,7 @@ class FaceDetectionActivity : AppCompatActivity() {
             location = "Bottom"
         } else if((vertical == 2 && horizon == 2) || command == "right_bottom"){
             location = "Right_Bottom"
-        } else if((vertical == 1 && horizon == 1) || command == "Center"){
+        } else if((vertical == 1 && horizon == 1) || command == "center"){
             location = "Center"
         }
     }
@@ -317,6 +317,20 @@ class FaceDetectionActivity : AppCompatActivity() {
             "取消"
         ){  dialog, which ->
             binding.overlayView.alpha = 0f
+            faceDetectionTimer = Timer()
+            faceDetectionTimer.scheduleAtFixedRate(object : TimerTask() {
+                override fun run() {
+                    DeterminDir(
+                        rect.centerX(),
+                        rect.centerY(),
+                        rectangleView.centerX(),
+                        rectangleView.centerY(),
+                        tts,
+                        err,
+                        NoFace
+                    )
+                }
+            }, 0, 3000) // 1000 毫秒（1秒）更新一次
         }
         val dialog = builder.create()
         dialog.show()
@@ -332,11 +346,39 @@ class FaceDetectionActivity : AppCompatActivity() {
             "確定"
         ) { dialog, which ->
             binding.overlayView.alpha = 0f
+            faceDetectionTimer = Timer()
+            faceDetectionTimer.scheduleAtFixedRate(object : TimerTask() {
+                override fun run() {
+                    DeterminDir(
+                        rect.centerX(),
+                        rect.centerY(),
+                        rectangleView.centerX(),
+                        rectangleView.centerY(),
+                        tts,
+                        err,
+                        NoFace
+                    )
+                }
+            }, 0, 3000) // 1000 毫秒（1秒）更新一次
         }
         builder.setNegativeButton(
             "取消"
         ){  dialog, which ->
             binding.overlayView.alpha = 0f
+            faceDetectionTimer = Timer()
+            faceDetectionTimer.scheduleAtFixedRate(object : TimerTask() {
+                override fun run() {
+                    DeterminDir(
+                        rect.centerX(),
+                        rect.centerY(),
+                        rectangleView.centerX(),
+                        rectangleView.centerY(),
+                        tts,
+                        err,
+                        NoFace
+                    )
+                }
+            }, 0, 3000) // 1000 毫秒（1秒）更新一次
         }
         val dialog = builder.create()
         dialog.show()
@@ -421,29 +463,14 @@ class FaceDetectionActivity : AppCompatActivity() {
             InputImage.fromMediaImage(imageProxy.image!!, imageProxy.imageInfo.rotationDegrees)
         detector.process(inputImage).addOnSuccessListener { faces ->
             binding.graphicOverlay.clear()
+            if(faces.size == 0) NoFace = true
             faces.forEach { face ->
+                NoFace = false
                 val faceBox = FaceBox(binding.graphicOverlay, face, imageProxy.image!!.cropRect)
                 binding.graphicOverlay.add(faceBox)
-                var rect = faceBox.returnFace()
-
-                Log.d("facebox","$rect")
-//                if((faceBox.face.boundingBox.centerX() - rectangleView.centerX()).absoluteValue > err){
-//                    if((faceBox.face.boundingBox.centerX() > rectangleView.centerX() && lensFacing == LENS_FACING_FRONT) || (faceBox.face.boundingBox.centerX() < rectangleView.centerX() && lensFacing == LENS_FACING_BACK)){
-//                        Log.d("move", "turn left")
-//                    }
-//                    else{
-//                        Log.d("move", "turn right")
-//                    }
-//                }
-//                else{
-//                    if((faceBox.face.boundingBox.centerY() - rectangleView.centerY()).absoluteValue > err) {
-//                        if ((faceBox.face.boundingBox.centerY() > rectangleView.centerY() && lensFacing == LENS_FACING_FRONT) || (faceBox.face.boundingBox.centerY() < rectangleView.centerY() && lensFacing == LENS_FACING_BACK)) {
-//                            Log.d("move", "turn up")
-//                        } else {
-//                            Log.d("move", "turn down")
-//                        }
-//                    }
-//                }
+                rect = faceBox.returnFace()
+                Log.d("Facepos","face:${rect.centerX()}")
+                Log.d("Facepos","rect:${rectangleView.centerX()}")
             }
         }.addOnFailureListener {
             it.printStackTrace()
