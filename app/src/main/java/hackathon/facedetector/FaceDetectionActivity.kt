@@ -16,6 +16,7 @@ import android.view.View
 import android.widget.CheckBox
 import android.widget.RadioButton
 import android.widget.RadioGroup
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -225,8 +226,7 @@ class FaceDetectionActivity : AppCompatActivity() {
             startActivityForResult(intent, REQUEST_CODE_SPEECH_INPUT)
         } catch (e: Exception) {
             // on below line we are displaying error message in toast
-            Toast
-                .makeText(
+            Toast.makeText(
                     this@FaceDetectionActivity, " " + e.message,
                     Toast.LENGTH_SHORT
                 )
@@ -304,6 +304,7 @@ class FaceDetectionActivity : AppCompatActivity() {
         builder.setPositiveButton(
             "確定"
         ) { dialog, which ->
+            setLocation()
             buildAngleDialog()
         }
         builder.setNegativeButton(
