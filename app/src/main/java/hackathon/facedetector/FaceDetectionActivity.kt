@@ -4,9 +4,6 @@ import android.annotation.SuppressLint
 import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
-import android.graphics.Canvas
-import android.graphics.Color
-import android.graphics.Paint
 import android.os.Bundle
 import android.provider.MediaStore
 import android.speech.tts.TextToSpeech
@@ -36,15 +33,8 @@ import meichu.hackathon.R
 import meichu.hackathon.databinding.ActivityFaceDetectionBinding
 import java.util.Locale
 import java.util.Timer
-import java.util.TimerTask
 import java.util.concurrent.Executors
-import hackathon.facedetector.Rec
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
-import kotlin.math.absoluteValue
 import kotlin.properties.Delegates
-
 
 class FaceDetectionActivity : AppCompatActivity() {
     private var location: String by Delegates.observable("Center") { property, oldValue, newValue ->
@@ -67,7 +57,8 @@ class FaceDetectionActivity : AppCompatActivity() {
     private val requestPermissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) {}
     private val faceDetectionTimer = Timer()
-
+    private var screenWidth = 0
+    private var screenHeight = 0
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -81,7 +72,16 @@ class FaceDetectionActivity : AppCompatActivity() {
         binding.settingBtn.setOnClickListener{
             SettingActivity.startActivity(this)
         }
+
+        var myUtilityClass = MyUtilityClass(this)
+        val screenSize = myUtilityClass.getScreenSize()
+        screenWidth = screenSize.first
+        screenHeight = screenSize.second
+        Log.d("height","$screenHeight")
         rectangleView = findViewById(R.id.Rec)
+        rectangleView.setScreenSize(screenWidth, screenHeight)
+
+
 
         cameraXViewModel.value.processCameraProvider.observe(this) { provider ->
             processCameraProvider = provider
@@ -97,6 +97,7 @@ class FaceDetectionActivity : AppCompatActivity() {
                 tts.setSpeechRate(1.0f)
             }
         })
+
 //        faceDetectionTimer.scheduleAtFixedRate(object : TimerTask() {
 //            override fun run() {
 //                tts.speak("Turn your phone right", TextToSpeech.QUEUE_ADD, null)
@@ -114,7 +115,7 @@ class FaceDetectionActivity : AppCompatActivity() {
              }
             cameraSelector = CameraSelector.Builder().requireLensFacing(lensFacing).build()
             println("Hello, $lensFacing")
-            processCameraProvider.unbindAll();
+            processCameraProvider.unbindAll()
             try {
                 processCameraProvider.bindToLifecycle(this, cameraSelector, imageCapture,
                     imageAnalysis, cameraPreview)
@@ -217,23 +218,26 @@ class FaceDetectionActivity : AppCompatActivity() {
             faces.forEach { face ->
                 val faceBox = FaceBox(binding.graphicOverlay, face, imageProxy.image!!.cropRect)
                 binding.graphicOverlay.add(faceBox)
-                if((faceBox.face.boundingBox.centerX() - rectangleView.centerX()).absoluteValue > err){
-                    if((faceBox.face.boundingBox.centerX() > rectangleView.centerX() && lensFacing == LENS_FACING_FRONT) || (faceBox.face.boundingBox.centerX() < rectangleView.centerX() && lensFacing == LENS_FACING_BACK)){
-                        Log.d("move", "turn left")
-                    }
-                    else{
-                        Log.d("move", "turn right")
-                    }
-                }
-                else{
-                    if((faceBox.face.boundingBox.centerY() - rectangleView.centerY()).absoluteValue > err) {
-                        if ((faceBox.face.boundingBox.centerY() > rectangleView.centerY() && lensFacing == LENS_FACING_FRONT) || (faceBox.face.boundingBox.centerY() < rectangleView.centerY() && lensFacing == LENS_FACING_BACK)) {
-                            Log.d("move", "turn up")
-                        } else {
-                            Log.d("move", "turn down")
-                        }
-                    }
-                }
+                var rect = faceBox.returnFace()
+
+                Log.d("facebox","$rect")
+//                if((faceBox.face.boundingBox.centerX() - rectangleView.centerX()).absoluteValue > err){
+//                    if((faceBox.face.boundingBox.centerX() > rectangleView.centerX() && lensFacing == LENS_FACING_FRONT) || (faceBox.face.boundingBox.centerX() < rectangleView.centerX() && lensFacing == LENS_FACING_BACK)){
+//                        Log.d("move", "turn left")
+//                    }
+//                    else{
+//                        Log.d("move", "turn right")
+//                    }
+//                }
+//                else{
+//                    if((faceBox.face.boundingBox.centerY() - rectangleView.centerY()).absoluteValue > err) {
+//                        if ((faceBox.face.boundingBox.centerY() > rectangleView.centerY() && lensFacing == LENS_FACING_FRONT) || (faceBox.face.boundingBox.centerY() < rectangleView.centerY() && lensFacing == LENS_FACING_BACK)) {
+//                            Log.d("move", "turn up")
+//                        } else {
+//                            Log.d("move", "turn down")
+//                        }
+//                    }
+//                }
             }
         }.addOnFailureListener {
             it.printStackTrace()

@@ -58,9 +58,6 @@ open class FaceBoxOverlay(context: Context?, attrs: AttributeSet?) : View(contex
     fun add(faceBox: FaceBox) {
         synchronized(lock) { faceBoxes.add(faceBox) }
     }
-    fun plot() {
-        synchronized(lock) {}
-    }
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
         synchronized(lock) {

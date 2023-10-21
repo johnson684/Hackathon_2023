@@ -4,6 +4,7 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Rect
+import android.graphics.RectF
 import com.google.mlkit.vision.face.Face
 
 class FaceBox(
@@ -24,5 +25,13 @@ class FaceBox(
             faceBoundingBox = face.boundingBox
         )
         canvas?.drawRect(rect, paint)
+    }
+    open fun returnFace(): RectF {
+        val rect = getBoxRect(
+            imageRectWidth = imageRect.width().toFloat(),
+            imageRectHeight = imageRect.height().toFloat(),
+            faceBoundingBox = face.boundingBox
+        )
+        return rect
     }
 }
