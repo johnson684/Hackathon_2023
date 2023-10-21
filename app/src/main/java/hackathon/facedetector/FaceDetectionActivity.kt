@@ -10,7 +10,10 @@ import android.provider.MediaStore
 import android.speech.tts.TextToSpeech
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
 import android.widget.CheckBox
+import android.widget.RadioButton
+import android.widget.RadioGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -90,7 +93,6 @@ class FaceDetectionActivity : AppCompatActivity() {
         rectangleView.setScreenSize(screenWidth, screenHeight)
 
 
-
         cameraXViewModel.value.processCameraProvider.observe(this) { provider ->
             processCameraProvider = provider
             bindCameraPreview()
@@ -118,6 +120,43 @@ class FaceDetectionActivity : AppCompatActivity() {
             }
         }, 0, 3000) // 1000 毫秒（1秒）更新一次
     }
+    private var vertical = 1
+    private var horizon = 1
+    fun onRadioButtonClicked(view: View) {
+        if (view is RadioButton) {
+            // Is the button now checked?
+            val checked = view.isChecked
+
+            // Check which radio button was clicked
+            when (view.getId()) {
+                R.id.up_button ->
+                    if (checked) {
+                        vertical = 0
+                    }
+                R.id.middle_vertical_button ->
+                    if (checked) {
+                        vertical = 1
+                    }
+                R.id.down_button ->
+                    if (checked) {
+                        vertical = 2
+                    }
+                R.id.left_button ->
+                    if(checked) {
+                        horizon = 0
+                    }
+                R.id.middle_horizontal_button ->
+                    if(checked) {
+                        horizon = 1
+                    }
+                R.id.right_button ->
+                    if(checked) {
+                        horizon = 2
+                    }
+            }
+        }
+
+    }
     private fun buildButtonOnClickListener(){
 //        checkBox = findViewById<CheckBox>(R.id.button1)
 //        checkBox.isChecked = true
@@ -138,6 +177,27 @@ class FaceDetectionActivity : AppCompatActivity() {
 //            checkBoxObj.isChecked = false
 //        }
     }
+    private fun setLocation() {
+        if(vertical == 0 && horizon == 0) {
+            location = "Left_Top"
+        } else if(vertical == 0 && horizon == 1) {
+            location = "Top"
+        } else if(vertical == 0 && horizon == 2) {
+            location = "Right_Top"
+        } else if(vertical == 1 && horizon == 0) {
+            location = "Left"
+        } else if(vertical == 1 && horizon == 1) {
+            location = "Center"
+        } else if(vertical == 1 && horizon == 2) {
+            location = "Right"
+        } else if(vertical == 2 && horizon == 0) {
+            location = "Left_Bottom"
+        } else if(vertical == 2 && horizon == 1) {
+            location = "Bottom"
+        } else if(vertical == 2 && horizon == 2) {
+            location = "Right_Bottom"
+        }
+    }
     private fun buildLocationDialog(){
         val builder = AlertDialog.Builder(this)
         builder.setTitle("請設定位置")
@@ -148,6 +208,7 @@ class FaceDetectionActivity : AppCompatActivity() {
         builder.setPositiveButton(
             "確定"
         ) { dialog, which ->
+            setLocation()
             buildAngleDialog()
         }
         builder.setNegativeButton(

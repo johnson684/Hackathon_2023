@@ -29,6 +29,24 @@ open class Rec (context: Context?, attrs: AttributeSet?): View(context, attrs) {
             right = Width/3*2
             bottom = Height/3*2
         }
+        else if(location == "Left_Top") {
+            left = 0
+            top = 0
+            right =  Width/3
+            bottom = Height/3
+        }
+        else if(location == "Top") {
+            left = Width/3
+            top = 0
+            right =  Width/3*2
+            bottom = Height/3
+        }
+        else if(location == "Right_Top") {
+            left = Width/3*2
+            top = 0
+            right =  Width
+            bottom = Height/3
+        }
         else if(location == "Left") {
             left = 0
             top = Height/3
@@ -40,6 +58,24 @@ open class Rec (context: Context?, attrs: AttributeSet?): View(context, attrs) {
             top = Height/3
             right =  Width
             bottom = Height/3*2
+        }
+        else if(location == "Left_Bottom") {
+            left = 0
+            top = Height/3*2
+            right =  Width/3
+            bottom = Height
+        }
+        else if(location == "Bottom") {
+            left = Width/3
+            top = Height/3*2
+            right =  Width/3*2
+            bottom = Height
+        }
+        else if(location == "Right_Bottom") {
+            left = Width/3*2
+            top = Height/3*2
+            right =  Width
+            bottom = Height
         }
     }
     fun floatToPixel(value: Float): Int{

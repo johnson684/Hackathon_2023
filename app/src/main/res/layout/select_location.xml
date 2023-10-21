@@ -25,7 +25,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:textAppearance="@style/TextAppearance.AppCompat" />
+            android:textAppearance="@style/TextAppearance.AppCompat"
+            android:onClick="onRadioButtonClicked"/>
         <RadioButton
             android:text="中"
             android:id="@+id/middle_vertical_button"
@@ -33,14 +34,15 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:textAppearance="@style/TextAppearance.AppCompat"
-            android:checked="true"/>
+            android:onClick="onRadioButtonClicked"/>
         <RadioButton
             android:text="下"
             android:id="@+id/down_button"
             android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:textAppearance="@style/TextAppearance.AppCompat"/>
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textAppearance="@style/TextAppearance.AppCompat"
+            android:onClick="onRadioButtonClicked"/>
     </RadioGroup>
 
     <TextView
@@ -59,7 +61,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:textAppearance="@style/TextAppearance.AppCompat"/>
+            android:textAppearance="@style/TextAppearance.AppCompat"
+            android:onClick="onRadioButtonClicked"/>
         <RadioButton
             android:text="中"
             android:id="@+id/middle_horizontal_button"
@@ -67,13 +70,126 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:textAppearance="@style/TextAppearance.AppCompat"
-            android:checked="true"/>
+            android:onClick="onRadioButtonClicked"/>
         <RadioButton
             android:text="右"
             android:id="@+id/right_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:textAppearance="@style/TextAppearance.AppCompat"/>
+            android:textAppearance="@style/TextAppearance.AppCompat"
+            android:onClick="onRadioButtonClicked"/>
     </RadioGroup>
+<!--    <RadioGroup-->
+<!--        xmlns:android="http://schemas.android.com/apk/res/android"-->
+<!--        android:id="@+id/gridLayout"-->
+<!--        android:layout_width="210dp"-->
+<!--        android:layout_height="210dp"-->
+<!--        android:columnCount="3"-->
+<!--        android:rowCount="3"-->
+<!--        android:layout_gravity="center">-->
+<!--        <TableRow-->
+<!--            android:layout_gravity="center_horizontal">-->
+<!--        <RadioButton-->
+<!--            android:id="@+id/button0"-->
+<!--            android:layout_width="50dp"-->
+<!--            android:layout_height="50dp"-->
+<!--            android:background = "@drawable/button_selector"-->
+<!--            android:button="@null"-->
+<!--            android:layout_margin="10dp"-->
+<!--            />-->
+
+<!--        <RadioButton-->
+<!--            android:id="@+id/button1"-->
+<!--            android:layout_width="50dp"-->
+<!--            android:layout_height="50dp"-->
+<!--            android:background = "@drawable/button_selector"-->
+<!--            android:clickable="true"-->
+<!--            android:checked="true"-->
+<!--            android:button="@null"-->
+<!--            android:layout_margin="10dp"-->
+<!--            />-->
+
+<!--        <RadioButton-->
+<!--            android:id="@+id/button2"-->
+<!--            android:layout_width="50dp"-->
+<!--            android:layout_height="50dp"-->
+<!--            android:background = "@drawable/button_selector"-->
+<!--            android:clickable="false"-->
+<!--            android:checked="true"-->
+<!--            android:button="@null"-->
+<!--            android:layout_margin="10dp"-->
+<!--            />-->
+<!--        </TableRow>-->
+<!--        <TableRow-->
+<!--            android:layout_gravity="center_horizontal">-->
+<!--        <RadioButton-->
+<!--            android:id="@+id/button3"-->
+<!--            android:layout_width="50dp"-->
+<!--            android:layout_height="50dp"-->
+<!--            android:background = "@drawable/button_selector"-->
+<!--            android:clickable="true"-->
+<!--            android:checked="true"-->
+<!--            android:button="@null"-->
+<!--            android:layout_margin="10dp"-->
+<!--            />-->
+
+<!--        <RadioButton-->
+<!--            android:id="@+id/button4"-->
+<!--            android:layout_width="50dp"-->
+<!--            android:layout_height="50dp"-->
+<!--            android:background = "@drawable/button_selector"-->
+<!--            android:clickable="true"-->
+<!--            android:checked="true"-->
+<!--            android:button="@null"-->
+<!--            android:layout_margin="10dp"-->
+<!--            />-->
+
+<!--        <RadioButton-->
+<!--            android:id="@+id/button5"-->
+<!--            android:layout_width="50dp"-->
+<!--            android:layout_height="50dp"-->
+<!--            android:background = "@drawable/button_selector"-->
+<!--            android:clickable="true"-->
+<!--            android:checked="true"-->
+<!--            android:button="@null"-->
+<!--            android:layout_margin="10dp"-->
+<!--            />-->
+<!--        </TableRow>-->
+<!--        <TableRow-->
+<!--            android:layout_gravity="center_horizontal">-->
+<!--        <RadioButton-->
+<!--            android:id="@+id/button6"-->
+<!--            android:layout_width="50dp"-->
+<!--            android:layout_height="50dp"-->
+<!--            android:background = "@drawable/button_selector"-->
+<!--            android:clickable="true"-->
+<!--            android:checked="true"-->
+<!--            android:button="@null"-->
+<!--            android:layout_margin="10dp"-->
+<!--            />-->
+
+<!--        <RadioButton-->
+<!--            android:id="@+id/button7"-->
+<!--            android:layout_width="50dp"-->
+<!--            android:layout_height="50dp"-->
+<!--            android:background = "@drawable/button_selector"-->
+<!--            android:clickable="true"-->
+<!--            android:checked="true"-->
+<!--            android:button="@null"-->
+<!--            android:layout_margin="10dp"-->
+<!--            />-->
+
+<!--        <RadioButton-->
+<!--            android:id="@+id/button8"-->
+<!--            android:layout_width="50dp"-->
+<!--            android:layout_height="50dp"-->
+<!--            android:background = "@drawable/button_selector"-->
+<!--            android:clickable="true"-->
+<!--            android:checked="true"-->
+<!--            android:button="@null"-->
+<!--            android:layout_margin="10dp"-->
+<!--            />-->
+<!--        </TableRow>-->
+<!--    </RadioGroup>-->
 </TableLayout>

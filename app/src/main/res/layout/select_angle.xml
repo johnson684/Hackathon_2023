@@ -27,8 +27,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:textAppearance="@style/TextAppearance.AppCompat"
-            android:checked="true"/>
+            android:textAppearance="@style/TextAppearance.AppCompat" />
         <RadioButton
             android:text="右側臉"
             android:id="@+id/right_face_button"
