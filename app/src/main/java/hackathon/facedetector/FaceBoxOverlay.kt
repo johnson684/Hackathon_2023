@@ -2,6 +2,8 @@ package hackathon.facedetector
 
 import android.content.Context
 import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.Paint
 import android.graphics.Rect
 import android.graphics.RectF
 import android.util.AttributeSet
@@ -19,7 +21,6 @@ open class FaceBoxOverlay(context: Context?, attrs: AttributeSet?) : View(contex
     abstract class FaceBox(private val overlay: FaceBoxOverlay) {
 
         abstract fun draw(canvas: Canvas?)
-
         fun getBoxRect(imageRectWidth: Float, imageRectHeight: Float, faceBoundingBox: Rect): RectF {
             val scaleX = overlay.width.toFloat() / imageRectHeight
             val scaleY = overlay.height.toFloat() / imageRectWidth
@@ -57,7 +58,9 @@ open class FaceBoxOverlay(context: Context?, attrs: AttributeSet?) : View(contex
     fun add(faceBox: FaceBox) {
         synchronized(lock) { faceBoxes.add(faceBox) }
     }
-
+    fun plot() {
+        synchronized(lock) {}
+    }
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
         synchronized(lock) {

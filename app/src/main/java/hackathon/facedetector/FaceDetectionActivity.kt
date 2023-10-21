@@ -4,6 +4,9 @@ import android.annotation.SuppressLint
 import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.Paint
 import android.os.Bundle
 import android.provider.MediaStore
 import android.speech.tts.TextToSpeech
@@ -29,11 +32,14 @@ import hackathon.cameraPermissionRequest
 import hackathon.isPermissionGranted
 import hackathon.openPermissionSetting
 import hackathon.setting.SettingActivity
+import meichu.hackathon.R
 import meichu.hackathon.databinding.ActivityFaceDetectionBinding
 import java.util.Locale
 import java.util.Timer
 import java.util.TimerTask
 import java.util.concurrent.Executors
+import hackathon.facedetector.Rec
+
 
 
 class FaceDetectionActivity : AppCompatActivity() {
@@ -51,6 +57,9 @@ class FaceDetectionActivity : AppCompatActivity() {
     private val requestPermissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) {}
     private val faceDetectionTimer = Timer()
+
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         if (!isPermissionGranted(cameraPermission)) {
             requestCameraPermission()
@@ -61,6 +70,14 @@ class FaceDetectionActivity : AppCompatActivity() {
         binding.settingBtn.setOnClickListener{
             SettingActivity.startActivity(this)
         }
+
+        // 获取 RectangleView 的引用
+        val rectangleView: Rec = findViewById(R.id.Rec)
+
+        rectangleView.invalidate()
+        // 调用 RectangleView 中的方法，例如绘制矩形
+//        rectangleView.rec()
+
         cameraXViewModel.value.processCameraProvider.observe(this) { provider ->
             processCameraProvider = provider
             bindCameraPreview()
@@ -81,6 +98,7 @@ class FaceDetectionActivity : AppCompatActivity() {
 //            }
 //        }, 0, 3000) // 1000 毫秒（1秒）更新一次
     }
+
     private fun bindCameraFlip(){
         binding.lenSwitchBtn.setOnClickListener {
              lensFacing = if (lensFacing == LENS_FACING_BACK) {
