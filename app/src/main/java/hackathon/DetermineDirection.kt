@@ -1,13 +1,14 @@
 package hackathon
 import android.speech.tts.TextToSpeech
-import android.util.Log
 import androidx.camera.core.CameraSelector
 import hackathon.facedetector.desiredAngle
 import hackathon.facedetector.faceAngle
 import hackathon.facedetector.lensFacing
 import kotlin.math.absoluteValue
-fun DeterminDir(FacePosX: Float,FacePosY: Float, rectPosX: Float, rectPosY: Float, tts: TextToSpeech, err:Float, NoFace:Boolean){
-    if(NoFace) tts.speak("There are no faces", TextToSpeech.QUEUE_ADD, null)
+fun DetermineDirection(FacePosX: Float,FacePosY: Float, rectPosX: Float, rectPosY: Float, tts: TextToSpeech, err:Float, NoFace:Boolean): Boolean{
+    if(NoFace){
+        tts.speak("There are no faces", TextToSpeech.QUEUE_ADD, null)
+    }
     else {
         if ((FacePosX - rectPosX).absoluteValue > err) {
             if ((FacePosX > rectPosX && lensFacing == CameraSelector.LENS_FACING_FRONT) || (FacePosX < rectPosX && lensFacing == CameraSelector.LENS_FACING_BACK)) {
@@ -32,6 +33,7 @@ fun DeterminDir(FacePosX: Float,FacePosY: Float, rectPosX: Float, rectPosY: Floa
                     if (-20 <= faceAngle && faceAngle <= 20){
                         // angle is correct
                         tts.speak("Successful, picture taken", TextToSpeech.QUEUE_ADD, null)
+                        return true
                     }
                     else if (faceAngle < -20){
                         // angle is left
@@ -53,6 +55,7 @@ fun DeterminDir(FacePosX: Float,FacePosY: Float, rectPosX: Float, rectPosY: Floa
                     else{
                         // angle is right
                         tts.speak("Successful, picture taken", TextToSpeech.QUEUE_ADD, null)
+                        return true
                     }
                 }
                 else{
@@ -62,6 +65,7 @@ fun DeterminDir(FacePosX: Float,FacePosY: Float, rectPosX: Float, rectPosY: Floa
                     else if (faceAngle < -20){
                         // angle is left
                         tts.speak("Successful, picture taken", TextToSpeech.QUEUE_ADD, null)
+                        return true
                     }
                     else{
                         // angle is right
@@ -71,4 +75,5 @@ fun DeterminDir(FacePosX: Float,FacePosY: Float, rectPosX: Float, rectPosY: Floa
             }
         }
     }
+    return false
 }

@@ -32,7 +32,7 @@ import com.google.mlkit.vision.face.FaceDetection
 import com.google.mlkit.vision.face.FaceDetector
 import com.google.mlkit.vision.face.FaceDetectorOptions
 import hackathon.CameraXViewModel
-import hackathon.DeterminDir
+import hackathon.DetermineDirection
 import hackathon.cameraPermissionRequest
 import hackathon.isPermissionGranted
 import hackathon.openPermissionSetting
@@ -112,7 +112,7 @@ class FaceDetectionActivity : AppCompatActivity() {
 
         faceDetectionTimer.scheduleAtFixedRate(object : TimerTask() {
             override fun run() {
-                DeterminDir(
+                if(DetermineDirection(
                     rect.centerX(),
                     rect.centerY(),
                     rectangleView.centerX(),
@@ -120,7 +120,10 @@ class FaceDetectionActivity : AppCompatActivity() {
                     tts,
                     err,
                     NoFace
-                )
+                )){
+                    takePhoto()
+                    updateLifecycle()
+                }
             }
         }, 0, 3000) // 1000 毫秒（1秒）更新一次
     }
@@ -180,7 +183,7 @@ class FaceDetectionActivity : AppCompatActivity() {
         }
 
     }
-    private fun updateLifecycle(){
+    public fun updateLifecycle(){
         try {
             processCameraProvider.bindToLifecycle(this, cameraSelector, imageCapture,
                 imageAnalysis, cameraPreview)
@@ -190,7 +193,7 @@ class FaceDetectionActivity : AppCompatActivity() {
             Log.e("TAG", illegalArgumentException.message ?: "IllegalArgumentException")
         }
     }
-    private fun takePhoto(){
+    public fun takePhoto(){
         val cameraExecutor = Executors.newSingleThreadExecutor()
         val contentValues = ContentValues()
         contentValues.put(MediaStore.MediaColumns.DISPLAY_NAME, "NEW_IMAGE")
@@ -278,7 +281,7 @@ class FaceDetectionActivity : AppCompatActivity() {
                 faceDetectionTimer = Timer()
                 faceDetectionTimer.scheduleAtFixedRate(object : TimerTask() {
                     override fun run() {
-                        DeterminDir(
+                        if(DetermineDirection(
                             rect.centerX(),
                             rect.centerY(),
                             rectangleView.centerX(),
@@ -286,7 +289,10 @@ class FaceDetectionActivity : AppCompatActivity() {
                             tts,
                             err,
                             NoFace
-                        )
+                        )){
+                            takePhoto()
+                            updateLifecycle()
+                        }
                     }
                 }, 0, 3000) // 1000 毫秒（1秒）更新一次
             }
@@ -333,7 +339,7 @@ class FaceDetectionActivity : AppCompatActivity() {
             faceDetectionTimer = Timer()
             faceDetectionTimer.scheduleAtFixedRate(object : TimerTask() {
                 override fun run() {
-                    DeterminDir(
+                    if(DetermineDirection(
                         rect.centerX(),
                         rect.centerY(),
                         rectangleView.centerX(),
@@ -341,7 +347,10 @@ class FaceDetectionActivity : AppCompatActivity() {
                         tts,
                         err,
                         NoFace
-                    )
+                    )){
+                        takePhoto()
+                        updateLifecycle()
+                    }
                 }
             }, 0, 3000) // 1000 毫秒（1秒）更新一次
         }
@@ -362,7 +371,7 @@ class FaceDetectionActivity : AppCompatActivity() {
             faceDetectionTimer = Timer()
             faceDetectionTimer.scheduleAtFixedRate(object : TimerTask() {
                 override fun run() {
-                    DeterminDir(
+                    if(DetermineDirection(
                         rect.centerX(),
                         rect.centerY(),
                         rectangleView.centerX(),
@@ -370,7 +379,10 @@ class FaceDetectionActivity : AppCompatActivity() {
                         tts,
                         err,
                         NoFace
-                    )
+                    )){
+                        takePhoto()
+                        updateLifecycle()
+                    }
                 }
             }, 0, 3000) // 1000 毫秒（1秒）更新一次
         }
@@ -381,7 +393,7 @@ class FaceDetectionActivity : AppCompatActivity() {
             faceDetectionTimer = Timer()
             faceDetectionTimer.scheduleAtFixedRate(object : TimerTask() {
                 override fun run() {
-                    DeterminDir(
+                    if(DetermineDirection(
                         rect.centerX(),
                         rect.centerY(),
                         rectangleView.centerX(),
@@ -389,7 +401,10 @@ class FaceDetectionActivity : AppCompatActivity() {
                         tts,
                         err,
                         NoFace
-                    )
+                    )){
+                        takePhoto()
+                        updateLifecycle()
+                    }
                 }
             }, 0, 3000) // 1000 毫秒（1秒）更新一次
         }
