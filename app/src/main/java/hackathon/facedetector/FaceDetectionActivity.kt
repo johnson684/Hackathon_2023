@@ -146,8 +146,8 @@ class FaceDetectionActivity : AppCompatActivity() {
             }
         }
     }
-    private var vertical = 1
-    private var horizon = 1
+    private var vertical = 3
+    private var horizon = 3
     fun onRadioButtonClicked(view: View) {
         if (view is RadioButton) {
             // Is the button now checked?
@@ -274,10 +274,10 @@ class FaceDetectionActivity : AppCompatActivity() {
 
                 // on below line we are setting data
                 // to our output text view.
-                Log.d("voice", Objects.requireNonNull(res)[0])
+
                 command = Objects.requireNonNull((res)[0]).toLowerCase().split(" ")
                     .joinToString(separator = "_")
-
+                Log.d("voice", command)
                 faceDetectionTimer = Timer()
                 faceDetectionTimer.scheduleAtFixedRate(object : TimerTask() {
                     override fun run() {
@@ -299,25 +299,47 @@ class FaceDetectionActivity : AppCompatActivity() {
         }
     }
     private fun setLocation() {
-        if((vertical == 0 && horizon == 0) || command == "left_top") {
-            location = "Left_Top"
-        } else if((vertical == 0 && horizon == 1 ) || command == "top") {
-            location = "Top"
-        } else if((vertical == 0 && horizon == 2) || command == "right_top") {
-            location = "Right_Top"
-        } else if((vertical == 1 && horizon == 0) || command == "left"){
-            location = "Left"
-        } else if((vertical == 1 && horizon == 2) || command == "right"){
-            location = "Right"
-        } else if((vertical == 2 && horizon == 0) || command == "left_bottom"){
-            location = "Left_Bottom"
-        } else if((vertical == 2 && horizon == 1) || command == "bottom"){
-            location = "Bottom"
-        } else if((vertical == 2 && horizon == 2) || command == "right_bottom"){
-            location = "Right_Bottom"
-        } else if((vertical == 1 && horizon == 1) || command == "center"){
-            location = "Center"
+        if (command == "full_face"){
+            desiredAngle = "Full"
+            tts.speak("full face", TextToSpeech.QUEUE_ADD, null)
+        } else if(command=="left_face"){
+            desiredAngle = "Left"
+            tts.speak("left face", TextToSpeech.QUEUE_ADD, null)
+        } else if(command=="right_face"){
+            desiredAngle = "Right"
+            tts.speak("right face", TextToSpeech.QUEUE_ADD, null)
         }
+        else {
+            if((vertical == 0 && horizon == 0) || command == "left_top") {
+                location = "Left_Top"
+                tts.speak("left top", TextToSpeech.QUEUE_ADD, null)
+            } else if((vertical == 0 && horizon == 1 ) || command == "top") {
+                location = "Top"
+                tts.speak("top", TextToSpeech.QUEUE_ADD, null)
+            } else if((vertical == 0 && horizon == 2) || command == "right_top") {
+                location = "Right_Top"
+                tts.speak("right top", TextToSpeech.QUEUE_ADD, null)
+            } else if((vertical == 1 && horizon == 0) || command == "left"){
+                location = "Left"
+                tts.speak("left", TextToSpeech.QUEUE_ADD, null)
+            } else if((vertical == 1 && horizon == 2) || command == "right"){
+                location = "Right"
+                tts.speak("right", TextToSpeech.QUEUE_ADD, null)
+            } else if((vertical == 2 && horizon == 0) || command == "left_bottom"){
+                location = "Left_Bottom"
+                tts.speak("left bottom", TextToSpeech.QUEUE_ADD, null)
+            } else if((vertical == 2 && horizon == 1) || command == "bottom"){
+                location = "Bottom"
+                tts.speak("bottom", TextToSpeech.QUEUE_ADD, null)
+            } else if((vertical == 2 && horizon == 2) || command == "right_bottom"){
+                location = "Right_Bottom"
+                tts.speak("right bottom", TextToSpeech.QUEUE_ADD, null)
+            } else if((vertical == 1 && horizon == 1) || command == "center"){
+                location = "Center"
+                tts.speak("center", TextToSpeech.QUEUE_ADD, null)
+            }
+        }
+
     }
     private fun buildLocationDialog(){
         val builder = AlertDialog.Builder(this)
