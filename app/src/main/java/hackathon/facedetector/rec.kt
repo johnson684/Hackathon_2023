@@ -23,6 +23,7 @@ open class Rec (context: Context?, attrs: AttributeSet?): View(context, attrs) {
         Height = height
     }
     open fun changeLocation(location: String) {
+        val offset = 120
         if(location == "Center") {
             left = Width/3
             top = Height/3
@@ -30,52 +31,52 @@ open class Rec (context: Context?, attrs: AttributeSet?): View(context, attrs) {
             bottom = Height/3*2
         }
         else if(location == "Left_Top") {
-            left = 0
-            top = 0
-            right =  Width/3
-            bottom = Height/3
+            left = 0+offset
+            top = 0+offset
+            right =  Width/3+offset
+            bottom = Height/3+offset
         }
         else if(location == "Top") {
             left = Width/3
-            top = 0
+            top = 0+offset
             right =  Width/3*2
-            bottom = Height/3
+            bottom = Height/3+offset
         }
         else if(location == "Right_Top") {
-            left = Width/3*2
-            top = 0
-            right =  Width
-            bottom = Height/3
+            left = Width/3*2-offset
+            top = 0+offset
+            right =  Width+-offset
+            bottom = Height/3+offset
         }
         else if(location == "Left") {
-            left = 0
+            left = 0+offset
             top = Height/3
-            right =  Width/3
+            right =  Width/3+offset
             bottom = Height/3*2
         }
         else if(location == "Right") {
-            left = Width/3*2
+            left = Width/3*2-offset
             top = Height/3
-            right =  Width
+            right =  Width-offset
             bottom = Height/3*2
         }
         else if(location == "Left_Bottom") {
-            left = 0
-            top = Height/3*2
-            right =  Width/3
-            bottom = Height
+            left = 0+offset
+            top = Height/3*2-offset
+            right =  Width/3+offset
+            bottom = Height-offset
         }
         else if(location == "Bottom") {
             left = Width/3
-            top = Height/3*2
+            top = Height/3*2-offset
             right =  Width/3*2
-            bottom = Height
+            bottom = Height-offset
         }
         else if(location == "Right_Bottom") {
-            left = Width/3*2
-            top = Height/3*2
-            right =  Width
-            bottom = Height
+            left = Width/3*2-offset
+            top = Height/3*2-offset
+            right =  Width-offset
+            bottom = Height-offset
         }
     }
 
