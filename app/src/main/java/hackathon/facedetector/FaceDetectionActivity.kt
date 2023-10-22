@@ -47,6 +47,7 @@ import kotlin.properties.Delegates
 
 var lensFacing = LENS_FACING_FRONT
 var faceAngle: Float = 0.0f
+var desiredAngle = "Full"
 class FaceDetectionActivity : AppCompatActivity() {
     private var location: String by Delegates.observable("Center") { _, _, _ ->
         rectangleView.changeLocation(location)
@@ -122,6 +123,25 @@ class FaceDetectionActivity : AppCompatActivity() {
                 )
             }
         }, 0, 3000) // 1000 毫秒（1秒）更新一次
+    }
+    fun onSelectAngleButtonClicked(view: View){
+        if (view is RadioButton){
+            val checked = view.isChecked
+            when (view.getId()){
+                R.id.left_face_button ->
+                    if (checked){
+                        desiredAngle = "Left"
+                    }
+                R.id.right_face_button ->
+                    if (checked){
+                        desiredAngle = "Right"
+                    }
+                R.id.full_face_button ->
+                    if (checked){
+                        desiredAngle = "Full"
+                    }
+            }
+        }
     }
     private var vertical = 1
     private var horizon = 1
@@ -462,9 +482,16 @@ class FaceDetectionActivity : AppCompatActivity() {
                 val faceBox = FaceBox(binding.graphicOverlay, face, imageProxy.image!!.cropRect)
                 binding.graphicOverlay.add(faceBox)
                 rect = faceBox.returnFace()
-                faceAngle = face.headEulerAngleZ
-                Log.d("Facepos","face:${rect.centerX()}")
-                Log.d("Facepos","rect:${rectangleView.centerX()}")
+                faceAngle = face.headEulerAngleY
+                if (-20f <= faceAngle && faceAngle <= 20){
+                    Log.d("tag",       "face angle: full face")
+                }
+                else if (faceAngle < -20){
+                    Log.d("tag", "face angle: left face")
+                }
+                else{
+                    Log.d("tag", "face angle: right face")
+                }
             }
         }.addOnFailureListener {
             it.printStackTrace()

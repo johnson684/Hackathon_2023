@@ -20,13 +20,15 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:onClick="onSelectAngleButtonClicked"
             android:textAppearance="@style/TextAppearance.AppCompat" />
         <RadioButton
             android:text="正臉"
-            android:id="@+id/face_in_middle_button"
+            android:id="@+id/full_face_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:onClick="onSelectAngleButtonClicked"
             android:textAppearance="@style/TextAppearance.AppCompat" />
         <RadioButton
             android:text="右側臉"
@@ -34,6 +36,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:onClick="onSelectAngleButtonClicked"
             android:textAppearance="@style/TextAppearance.AppCompat"/>
     </RadioGroup>
 </TableLayout>
